@@ -18,12 +18,12 @@ import org.hcilab.projects.nlogx.misc.DatabaseHelper
 import org.hcilab.projects.nlogx.misc.Util
 import org.json.JSONException
 import org.json.JSONObject
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
-internal class BrowseAdapter(private val context: Activity) :
-    RecyclerView.Adapter<BrowseViewHolder>() {
-    private val format = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.getDefault())
+internal class BrowseAdapter(private val context: Activity) : RecyclerView.Adapter<BrowseViewHolder>() {
+    private val dateFormat = SimpleDateFormat("MM.dd.yyyy", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val data = ArrayList<DataItem>()
     private val iconCache = HashMap<String?, Drawable?>()
     private val handler = Handler()
@@ -49,17 +49,17 @@ internal class BrowseAdapter(private val context: Activity) :
         val vh = BrowseViewHolder(view)
         vh.item.setOnClickListener { v: View ->
             val id = v.tag as String
-                val intent = Intent(context, DetailsActivity::class.java)
-                intent.putExtra(DetailsActivity.EXTRA_ID, id)
-                if (Build.VERSION.SDK_INT >= 21) {
-                    val p1 = Pair.create<View, String>(vh.icon, "icon")
-                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        context, p1
-                    )
-                    context.startActivityForResult(intent, 1, options.toBundle())
-                } else {
-                    context.startActivityForResult(intent, 1)
-                }
+            val intent = Intent(context, DetailsActivity::class.java)
+            intent.putExtra(DetailsActivity.EXTRA_ID, id)
+            if (Build.VERSION.SDK_INT >= 21) {
+                val p1 = Pair.create<View, String>(vh.icon, "icon")
+                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    context, p1
+                )
+                context.startActivityForResult(intent, 1, options.toBundle())
+            } else {
+                context.startActivityForResult(intent, 1)
+            }
         }
         return vh
     }
@@ -73,6 +73,7 @@ internal class BrowseAdapter(private val context: Activity) :
         }
         vh.item.tag = "" + item.id
         vh.name.text = item.appName
+        vh.datetime.text = item.timeString
         if (item.preview!!.length == 0) {
             vh.preview.visibility = View.GONE
             vh.text.visibility = View.VISIBLE
@@ -84,7 +85,7 @@ internal class BrowseAdapter(private val context: Activity) :
         }
         if (item.shouldShowDate()) {
             vh.date.visibility = View.VISIBLE
-            vh.date.text = item.date
+            vh.date.text = item.dateString
         } else {
             vh.date.visibility = View.GONE
         }
@@ -122,7 +123,7 @@ internal class BrowseAdapter(private val context: Activity) :
             if (cursor != null && cursor.moveToFirst()) {
                 for (i in 0 until cursor.count) {
                     val dataItem = DataItem(context, cursor.getLong(0), cursor.getString(1))
-                    val thisDate = dataItem.date
+                    val thisDate = dataItem.dateString
                     if (lastDate == thisDate) {
                         dataItem.setShowDate(false)
                     }
@@ -173,8 +174,10 @@ internal class BrowseAdapter(private val context: Activity) :
         var appName: String? = null
         var text: String? = null
         var preview: String? = null
-        var date: String? = null
+        var dateString: String? = null
+        var timeString: String? = null
         private var showDate = false
+
         fun shouldShowDate(): Boolean {
             return showDate
         }
@@ -195,7 +198,10 @@ internal class BrowseAdapter(private val context: Activity) :
                 if (!iconCache.containsKey(packageName)) {
                     iconCache[packageName] = Util.getAppIconFromPackage(context, packageName)
                 }
-                date = format.format(json.optLong("systemTime"))
+                Date(json.optLong("systemTime")).run {
+                    dateString = dateFormat.format(this)
+                    timeString = timeFormat.format(this)
+                }
                 showDate = true
             } catch (e: JSONException) {
                 if (Const.DEBUG) e.printStackTrace()
