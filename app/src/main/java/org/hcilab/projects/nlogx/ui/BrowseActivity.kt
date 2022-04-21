@@ -1,19 +1,18 @@
 package org.hcilab.projects.nlogx.ui
 
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import org.hcilab.projects.nlogx.ui.BrowseAdapter
-import android.os.Bundle
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import org.hcilab.projects.nlogx.R
-import androidx.recyclerview.widget.LinearLayoutManager
-import android.content.Intent
-import android.view.Menu
-import org.hcilab.projects.nlogx.ui.DetailsActivity
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.widget.Toast
 
 class BrowseActivity : AppCompatActivity(), OnRefreshListener {
     private var recyclerView: RecyclerView? = null
@@ -73,7 +72,19 @@ class BrowseActivity : AppCompatActivity(), OnRefreshListener {
         }
     }
 
-    private fun filter() {}
+    private fun filter() {
+        val editText = EditText(this)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.dialog_filter)
+            .setView(editText)
+            .setPositiveButton(R.string.dialog_ok) { dialog, which ->
+                adapter?.setFilter(editText.text.toString())
+            }
+            .setNegativeButton(R.string.dialog_remove_filter) { dialog, which ->
+               adapter?.setFilter(null)
+            }
+            .show() }
+
     override fun onRefresh() {
         update()
         swipeRefreshLayout!!.isRefreshing = false
