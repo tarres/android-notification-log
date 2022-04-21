@@ -33,8 +33,10 @@ internal class BrowseAdapter(private val context: Activity) :
 
     fun setFilter(filter: String?) {
         this.filter = filter
+        // Reset the adapter and reload items with filter
         data.clear()
         shouldLoadMore = true
+        lastDate = ""
         loadMore(Int.MAX_VALUE.toLong())
     }
 
@@ -43,7 +45,6 @@ internal class BrowseAdapter(private val context: Activity) :
         val vh = BrowseViewHolder(view)
         vh.item.setOnClickListener { v: View ->
             val id = v.tag as String
-            if (id != null) {
                 val intent = Intent(context, DetailsActivity::class.java)
                 intent.putExtra(DetailsActivity.EXTRA_ID, id)
                 if (Build.VERSION.SDK_INT >= 21) {
@@ -55,7 +56,6 @@ internal class BrowseAdapter(private val context: Activity) :
                 } else {
                     context.startActivityForResult(intent, 1)
                 }
-            }
         }
         return vh
     }
