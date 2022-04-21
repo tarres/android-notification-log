@@ -1,80 +1,81 @@
-package org.hcilab.projects.nlogx.ui;
+package org.hcilab.projects.nlogx.ui
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import org.hcilab.projects.nlogx.ui.BrowseAdapter
+import android.os.Bundle
+import org.hcilab.projects.nlogx.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.content.Intent
+import android.view.Menu
+import org.hcilab.projects.nlogx.ui.DetailsActivity
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.widget.Toast
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+class BrowseActivity : AppCompatActivity(), OnRefreshListener {
+    private var recyclerView: RecyclerView? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var adapter: BrowseAdapter? = null
 
-import org.hcilab.projects.nlogx.R;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_browse)
+        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
+        recyclerView = findViewById(R.id.list)
+        recyclerView?.setLayoutManager(layoutManager)
+        swipeRefreshLayout = findViewById(R.id.swiper)
+        swipeRefreshLayout?.setColorSchemeResources(R.color.colorAccent)
+        swipeRefreshLayout?.setOnRefreshListener(this)
+        update()
+    }
 
-public class BrowseActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data != null && DetailsActivity.ACTION_REFRESH == data.getStringExtra(DetailsActivity.EXTRA_ACTION)) {
+            update()
+        }
+    }
 
-	private RecyclerView recyclerView;
-	private SwipeRefreshLayout swipeRefreshLayout;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.browse, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_browse);
+    override fun onDestroy() {
+        super.onDestroy()
+        adapter = null
+    }
 
-		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-		recyclerView = findViewById(R.id.list);
-		recyclerView.setLayoutManager(layoutManager);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_refresh -> {
+                update()
+                return true
+            }
+            R.id.menu_filter -> {
+                filter()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
-		swipeRefreshLayout = findViewById(R.id.swiper);
-		swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-		swipeRefreshLayout.setOnRefreshListener(this);
+    private fun update() {
+        adapter = BrowseAdapter(this)
+        recyclerView!!.adapter = adapter
+        if (adapter!!.itemCount == 0) {
+            Toast.makeText(this, R.string.empty_log_file, Toast.LENGTH_LONG).show()
+            finish()
+        }
+    }
 
-		update();
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (data != null && DetailsActivity.ACTION_REFRESH.equals(data.getStringExtra(DetailsActivity.EXTRA_ACTION))) {
-			update();
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.browse, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.menu_refresh:
-				update();
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	private void update() {
-		BrowseAdapter adapter = new BrowseAdapter(this);
-		recyclerView.setAdapter(adapter);
-
-		if(adapter.getItemCount() == 0) {
-			Toast.makeText(this, R.string.empty_log_file, Toast.LENGTH_LONG).show();
-			finish();
-		}
-	}
-
-	@Override
-	public void onRefresh() {
-		update();
-		swipeRefreshLayout.setRefreshing(false);
-	}
+    private fun filter() {}
+    override fun onRefresh() {
+        update()
+        swipeRefreshLayout!!.isRefreshing = false
+    }
 }
