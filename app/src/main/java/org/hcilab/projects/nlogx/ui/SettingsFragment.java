@@ -48,12 +48,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		}
 
 		prefBrowse = pm.findPreference(Const.PREF_BROWSE);
-		if(prefBrowse != null) {
-			prefBrowse.setOnPreferenceClickListener(preference -> {
-				startActivity(new Intent(getActivity(), BrowseActivity.class));
-				return true;
-			});
-		}
 
 		prefText    = pm.findPreference(Const.PREF_TEXT);
 		prefOngoing = pm.findPreference(Const.PREF_ONGOING);

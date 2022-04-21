@@ -25,7 +25,7 @@
     <string name="settings_notification_access_disabled">Disabled — Click here to enable</string>
 
     <!-- Browse -->
-    <string name="settings_browse">Browse Notifications</string>
+    <string name="settings_browse">Notifications</string>
     <string name="settings_browse_summary_singular">%1$d notification</string>
     <string name="settings_browse_summary_plural">%1$d notifications</string>
 

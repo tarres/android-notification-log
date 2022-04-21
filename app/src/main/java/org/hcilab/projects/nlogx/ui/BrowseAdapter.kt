@@ -31,6 +31,10 @@ internal class BrowseAdapter(private val context: Activity) :
     private var shouldLoadMore = true
     private var filter: String? = null
 
+    init {
+        loadMore(Int.MAX_VALUE.toLong())
+    }
+
     fun setFilter(filter: String?) {
         this.filter = filter
         // Reset the adapter and reload items with filter
@@ -202,9 +206,5 @@ internal class BrowseAdapter(private val context: Activity) :
     companion object {
         private const val LIMIT = Int.MAX_VALUE
         private const val PAGE_SIZE = "20"
-    }
-
-    init {
-        loadMore(Int.MAX_VALUE.toLong())
     }
 }

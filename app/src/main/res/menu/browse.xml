@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_settings"
+        android:title="@string/category_settings"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_menu_manage"/>
+
+    <item
         android:id="@+id/menu_filter"
         android:title="@string/menu_filter"
         android:icon="@android:drawable/ic_menu_sort_by_size"
