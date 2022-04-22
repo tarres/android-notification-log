@@ -15,9 +15,10 @@
         android:icon="@android:drawable/ic_menu_manage"/>
 
     <item
-        android:id="@+id/menu_filter"
-        android:title="@string/menu_filter"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/menu_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Search"
+        app:showAsAction="ifRoom|withText"
+        app:actionViewClass="android.widget.SearchView"/>
 
 </menu>

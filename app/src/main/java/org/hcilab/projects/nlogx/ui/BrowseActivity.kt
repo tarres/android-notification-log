@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.Toast
-import android.widget.ViewSwitcher
-import androidx.appcompat.app.AlertDialog
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +42,9 @@ class BrowseActivity : AppCompatActivity(), OnRefreshListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.browse, menu)
+
+        setUpSearchView(menu)
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -60,16 +60,32 @@ class BrowseActivity : AppCompatActivity(), OnRefreshListener {
                 onRefresh()
                 return true
             }
-            R.id.menu_filter -> {
-                filter()
-                return true
-            }
             R.id.menu_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setUpSearchView(menu: Menu) {
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as SearchView
+        searchView.setOnCloseListener {
+            adapter?.setFilter(null)
+            false
+        }
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter?.setFilter(newText)
+                return true
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Do Nothing
+                return true
+            }
+        })
     }
 
     private fun update() {
@@ -81,19 +97,6 @@ class BrowseActivity : AppCompatActivity(), OnRefreshListener {
             emptyStateText?.visibility = View.GONE
         }
     }
-
-    private fun filter() {
-        val editText = EditText(this)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_filter)
-            .setView(editText)
-            .setPositiveButton(R.string.dialog_ok) { dialog, which ->
-                adapter?.setFilter(editText.text.toString())
-            }
-            .setNegativeButton(R.string.dialog_remove_filter) { dialog, which ->
-               adapter?.setFilter(null)
-            }
-            .show() }
 
     override fun onRefresh() {
         update()
