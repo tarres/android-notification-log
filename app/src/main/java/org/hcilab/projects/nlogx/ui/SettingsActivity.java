@@ -33,15 +33,14 @@ public class SettingsActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.menu_delete:
-				confirm();
-				return true;
-			case R.id.menu_export:
-				export();
-				return true;
-
-		}
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_delete) {
+            confirm();
+            return true;
+        } else if (itemId == R.id.menu_export) {
+            export();
+            return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 

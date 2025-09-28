@@ -2,14 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 36
+
+    namespace = "org.hcilab.projects.nlogx"
 
     defaultConfig {
         applicationId "de.thomasre.notificationlog"
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 33
         versionCode 11
         versionName "1.8"
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
@@ -19,27 +25,28 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    lint {
+        abortOnError false
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation "androidx.core:core-ktx:1.7.0"
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation "androidx.core:core-ktx:1.17.0"
+    //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
